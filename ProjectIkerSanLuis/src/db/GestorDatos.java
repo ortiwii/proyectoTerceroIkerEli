@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.Vector;
 
+import model.Administrador;
 import model.AlmacenProveedores;
 import model.Aula;
 import model.Centro;
@@ -47,8 +48,7 @@ public class GestorDatos {
     			String nombreAct = rs.getString("nombre");
     			String apellidosAct = rs.getString("apellidos");
     			String emailAct = rs.getString("email");
-    			String tipoAct = rs.getString("tipo");
-    			Boolean permisosAct = rs.getBoolean("permisos");
+    			String tipoAct = rs.getString("tipo");    			
     			
     			int equipoAct = rs.getInt("equipo");
     			System.out.println("Equipo = "+equipoAct);
@@ -59,7 +59,7 @@ public class GestorDatos {
     			Centro centro = this.getCentro(centroAct);
     			
 //    			int solicitudesAct = rs.getInt("solicitudes");    			
-    			usuario = new Usuario(userAct, passwAct, nombreAct, apellidosAct, emailAct, tipoAct, permisosAct, equipo, centro);    			
+    			usuario = new Usuario(userAct, passwAct, nombreAct, apellidosAct, emailAct, tipoAct, equipo, centro);    			
     			    		
     			i ++;
     		}
@@ -70,7 +70,6 @@ public class GestorDatos {
     		}
 			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}    	
     	return usuario;
@@ -87,7 +86,6 @@ public class GestorDatos {
 				String apellidosAct = rs.getString("apellidos");
 				String emailAct = rs.getString("email");
 				String tipoAct = rs.getString("tipo");
-				Boolean permisosAct = rs.getBoolean("permisos");
 				
 				int equipoAct = rs.getInt("equipo");
 				System.out.println("Equipo = "+equipoAct);
@@ -97,7 +95,7 @@ public class GestorDatos {
 				System.out.println("Centro = "+centroAct);
 				Centro centro = this.getCentro(centroAct);
 				    			
-				Usuario usuario = new Usuario(userAct, passwAct, nombreAct, apellidosAct, emailAct, tipoAct, permisosAct, equipo, centro);
+				Usuario usuario = new Usuario(userAct, passwAct, nombreAct, apellidosAct, emailAct, tipoAct, equipo, centro);
 				lista.add(usuario);
 	    	}	
     	}catch (Exception ex) {
@@ -120,21 +118,18 @@ public class GestorDatos {
     			String nombreAct = rs.getString("nombre");
     			String apellidosAct = rs.getString("apellidos");
     			String emailAct = rs.getString("email");
-    			String tipoAct = rs.getString("tipo");
-    			Boolean permisosAct = rs.getBoolean("permisos");    			
+    			String tipoAct = rs.getString("tipo");			
     			
     			String centroAct = rs.getString("centro");
     			System.out.println("Centro = "+centroAct);
     			Centro centro = this.getCentro(centroAct);
     			
 //    			int solicitudesAct = rs.getInt("solicitudes");    			
-    			usuario = new Usuario(userAct, passwAct, nombreAct, apellidosAct, emailAct, tipoAct, permisosAct, equipo, centro);    			
+    			usuario = new Usuario(userAct, passwAct, nombreAct, apellidosAct, emailAct, tipoAct, equipo, centro);    			
     			
     			
-    			System.out.println(usuario.toString());
     			i ++;
     		}
-    		System.out.println(i);
     		if (i == 1) {
     			return usuario;
     		}else {
@@ -142,7 +137,6 @@ public class GestorDatos {
     		}
 			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}    	
     	return usuario;
@@ -163,7 +157,6 @@ public class GestorDatos {
     			String apellidosAct = rs.getString("apellidos");
     			String emailAct = rs.getString("email");
     			String tipoAct = rs.getString("tipo");
-    			Boolean permisosAct = rs.getBoolean("permisos");
     			
     			int equipoAct = rs.getInt("equipo");
     			System.out.println("Equipo = "+equipoAct);
@@ -174,11 +167,10 @@ public class GestorDatos {
     			Centro centro = this.getCentro(centroAct);
     			
     			int solicitudesAct = rs.getInt("solicitudes");    			
-    			tecnico = new Tecnico(userAct, passwAct, nombreAct, apellidosAct, emailAct, tipoAct, permisosAct, equipo, centro, solicitudesAct);    			
+    			tecnico = new Tecnico(userAct, passwAct, nombreAct, apellidosAct, emailAct, tipoAct, equipo, centro, solicitudesAct);    			
     			    			    		
     			i ++;
     		}
-    		System.out.println(i);
     		if (i == 1) {
     			return tecnico;
     		}else {
@@ -186,23 +178,83 @@ public class GestorDatos {
     		}
 			
 		} catch (SQLException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}    	
     	return tecnico;
     }
+    
+public Administrador getAdministradorCompleto (String user) {
+    	
+    	GestorDB gestorDB = GestorDB.getGestorDB();
+    	String query = "SELECT * FROM sanluis.usuario WHERE user = '" + user + "';";
+    	ResultSet rs = gestorDB.execSQL(query);
+		Administrador administrador = null;
+    	try {
 
-	public void actualizarUsuario (Usuario pUsuario) {
-		String query = "UPDATE `sanluis`.`usuario` SET `nombre` = '"+pUsuario.getNombre()+"', `apellidos` = '"+pUsuario.getApellidos()+"', `email` = '"+pUsuario.getEmail()+"', `passw` = '"+pUsuario.getPassw()+"', `equipo` = '"+pUsuario.getEquipo().getIdEquipo()+"', `centro` = '"+pUsuario.getCentro().getNombre()+"' WHERE (`user` = '"+pUsuario.getUser()+"');";
-		System.out.println(query);
-		GestorDB.getGestorDB().execSQL(query);
-		System.out.println("Usuario actualizado");
+    		int i = 0;
+    		while (rs.next()) {
+    			String userAct = rs.getString("user");
+    			String passwAct = rs.getString("passw");
+    			String nombreAct = rs.getString("nombre");
+    			String apellidosAct = rs.getString("apellidos");
+    			String emailAct = rs.getString("email");
+    			String tipoAct = rs.getString("tipo");
+    			
+    			int equipoAct = rs.getInt("equipo");
+    			System.out.println("Equipo = "+equipoAct);
+    			Equipo equipo = this.getEquipo(equipoAct);
+    			
+    			String centroAct = rs.getString("centro");
+    			System.out.println("Centro = "+centroAct);
+    			Centro centro = this.getCentro(centroAct);
+    			
+    			int solicitudesAct = rs.getInt("solicitudes");    			
+    			Boolean permisosAct = rs.getBoolean("permisos");
+    			
+    			administrador = new Administrador(userAct, passwAct, nombreAct, apellidosAct, emailAct, tipoAct, permisosAct, equipo, centro, solicitudesAct);    			
+    			    			    		
+    			i ++;
+    		}
+    		if (i == 1) {
+    			return administrador;
+    		}else {
+    			return null;
+    		}
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}    	
+    	return administrador;
+    }
+
+	public boolean actualizarUsuario (Usuario pUsuario, String userPrevio) {
+		String query = "";
+		if (pUsuario.getEquipo() != null) {
+			query = "UPDATE `sanluis`.`usuario` SET `nombre` = '"+pUsuario.getNombre()+"', `apellidos` = '"+pUsuario.getApellidos()+"', `email` = '"+pUsuario.getEmail()+"', `passw` = '"+pUsuario.getPassw()+"', `equipo` = '"+pUsuario.getEquipo().getIdEquipo()+"', `centro` = '"+pUsuario.getCentro().getNombre()+"', `tipo` = '"+pUsuario.getTipo()+"' WHERE (`user` = '"+userPrevio+"');";
+		}else {
+			
+		}
+		try {
+			GestorDB.getGestorDB().execSQL(query);
+			return true;
+		}catch (Exception e) {
+			return false;
+		}
+		
+	}
+	public boolean eliminarUsuario(Usuario usuario) {
+		try {
+			String query = "DELETE FROM `sanluis`.`usuario` WHERE (`user` = '"+usuario.getUser()+"');";
+			GestorDB.getGestorDB().exeqSQLExc(query);
+			return true;
+		}catch (Exception ex) {
+			return false;
+		}
 	}
 	public void actualizarContraseñaUsuario (Usuario pUsuario) {
 		String query = "UPDATE `sanluis`.`usuario` SET `passw` = '"+pUsuario.getPassw()+"' WHERE (`user` = '"+pUsuario.getUser()+"');";
 		System.out.println(query);
 		GestorDB.getGestorDB().execSQL(query);
-		System.out.println("Contraseña de usuario actualizada");
 	}
 	
 	public void mostrarResultSet(ResultSet rs) throws java.sql.SQLException {
@@ -297,7 +349,6 @@ public class GestorDatos {
     			String apellidosAct = rs.getString("apellidos");
     			String emailAct = rs.getString("email");
     			String tipoAct = rs.getString("tipo");
-    			Boolean permisosAct = rs.getBoolean("permisos");
     			
     			int equipoAct = rs.getInt("equipo");
     			Equipo equipo = this.getEquipo(equipoAct);
@@ -306,7 +357,7 @@ public class GestorDatos {
     			Centro centro = this.getCentro(centroAct);
     			
     			int solicitudesAct = rs.getInt("solicitudes");    			
-    			Tecnico tecnico = new Tecnico (userAct, passwAct, nombreAct, apellidosAct, emailAct, tipoAct, permisosAct, equipo, centro, solicitudesAct);
+    			Tecnico tecnico = new Tecnico (userAct, passwAct, nombreAct, apellidosAct, emailAct, tipoAct, equipo, centro, solicitudesAct);
     			lista.add(tecnico);								
 			}			
 			
@@ -328,7 +379,6 @@ public class GestorDatos {
 				String apellidosAct = rs.getString("apellidos");
 				String emailAct = rs.getString("email");
 				String tipoAct = rs.getString("tipo");
-				Boolean permisosAct = rs.getBoolean("permisos");
     			int equipoAct = rs.getInt("equipo");
     			Equipo equipo = this.getEquipo(equipoAct);
     			
@@ -336,7 +386,7 @@ public class GestorDatos {
     			Centro centro = this.getCentro(centroAct);
     			
     			int solicitudesAct = rs.getInt("solicitudes");    			
-    			tecnico = new Tecnico (userAct, passwAct, nombreAct, apellidosAct, emailAct, tipoAct, permisosAct, equipo, centro, solicitudesAct);
+    			tecnico = new Tecnico (userAct, passwAct, nombreAct, apellidosAct, emailAct, tipoAct, equipo, centro, solicitudesAct);
 			}
 		}catch (Exception e) {
 			e.printStackTrace();

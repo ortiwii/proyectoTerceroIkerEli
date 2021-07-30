@@ -20,5 +20,10 @@ public class Centro {
 	public void setInformacion(String informacion) {
 		this.informacion = informacion;
 	}
+	@Override
+	public String toString() {
+		return this.nombre;
+	}
+	
 	
 }

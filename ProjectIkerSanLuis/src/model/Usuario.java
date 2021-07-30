@@ -7,7 +7,6 @@ public class Usuario {
 	protected String apellidos;
 	protected String email;
 	protected String tipo;
-	protected boolean permisos;
 	protected Equipo equipo;
 	protected Centro centro;
 
@@ -32,14 +31,13 @@ public class Usuario {
 	}
 	
 	public Usuario (String user, String passw, String nombre, String apllidos,
-			String email, String tipo, Boolean permisos, Equipo equipo, Centro centro) {
+			String email, String tipo, Equipo equipo, Centro centro) {
 		this.user = user;
 		this.passw = passw;
 		this.nombre = nombre;
 		this.apellidos = apllidos;
 		this.email = email;
-		this.tipo = tipo;
-		this.permisos = permisos;		
+		this.tipo = tipo;	
 		this.equipo = equipo;		
 		this.centro = centro;
 	}
@@ -47,7 +45,7 @@ public class Usuario {
 	@Override
 	public String toString() {
 		return "Usuario [user=" + user + ", passw=" + passw + ", nombre=" + nombre + ", apellidos=" + apellidos
-				+ ", email=" + email + ", tipo=" + tipo + ", permisos=" + permisos + ", equipo=" + equipo + ", centro="
+				+ ", email=" + email + ", tipo=" + tipo + ", equipo=" + equipo + ", centro="
 				+ centro + "]";
 	}
 
@@ -81,12 +79,10 @@ public class Usuario {
 		this.email = email;
 	}
 
-	public boolean isPermisos() {
-		return permisos;
-	}
-
-	public void setPermisos(boolean permisos) {
-		this.permisos = permisos;
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		// TODO Auto-generated method stub
+		return new Usuario(user, passw, nombre, apellidos, email, tipo, equipo, centro);
 	}
 
 	public Equipo getEquipo() {

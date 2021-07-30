@@ -253,7 +253,7 @@ public class TecnicoModificarEquipoUI extends JFrame{
 			public void actionPerformed(ActionEvent e) {			
 				Usuario usuario = GestorDatos.getInstance().getUsuarioCompleto(valor);
 				usuario.setEquipo(equipo);
-				GestorDatos.getInstance().actualizarUsuario(usuario);
+				GestorDatos.getInstance().actualizarUsuario(usuario, usuario.getUser());
 				JOptionPane.showMessageDialog(null, "Se ha asignado el equipo "+equipo.getIdEquipo()+" a el usuario "+usuario.getUser()+" correctamente");
 				btnAsignar.setEnabled(false);
 

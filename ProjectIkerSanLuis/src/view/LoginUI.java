@@ -9,6 +9,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import db.GestorDatos;
+import model.Administrador;
 import model.Usuario;
 
 import java.awt.event.ActionListener;
@@ -65,13 +66,18 @@ public class LoginUI extends JFrame {
 						dispose();
 						
 					}else if (user.getTipo().equals("t")) {
-						// TODO El usuario es de tipo tecnico
-						
+						// El usuario es de tipo tecnico						
 						TecnicoUI tecnicoUI = new TecnicoUI(GestorDatos.getInstance().getTecnicoCompleto(user.getUser()));
 						tecnicoUI.setVisible(true);
 						dispose();
 					}else if (user.getTipo().equals("a")) {
 						// TODO El usuario es de tipo administrador
+						
+						AdministradorUI administradorUI = new AdministradorUI(GestorDatos.getInstance().getAdministradorCompleto(user.getUser()));
+						administradorUI.setVisible(true);
+						dispose();
+					}else {
+						JOptionPane.showMessageDialog(null, "Error");
 					}
 								
 				}else {

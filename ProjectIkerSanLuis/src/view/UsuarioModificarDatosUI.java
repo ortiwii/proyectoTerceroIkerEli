@@ -4,6 +4,8 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import java.awt.BorderLayout;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
 import java.awt.Insets;
@@ -14,6 +16,7 @@ import javax.swing.JButton;
 import javax.swing.JTextField;
 
 import db.GestorDatos;
+import model.Centro;
 import model.Usuario;
 
 public class UsuarioModificarDatosUI extends JFrame{
@@ -35,7 +38,7 @@ public class UsuarioModificarDatosUI extends JFrame{
 	private JTextField textEmail;
 	private JTextField txtTipoDeUsuario;
 	private JButton btnQuieresCambiarTu;
-	private JLabel lblInfo;
+	
 	public UsuarioModificarDatosUI(Usuario usuario) {
 		this.usuario = usuario;
 		
@@ -165,20 +168,28 @@ public class UsuarioModificarDatosUI extends JFrame{
 		btnGuardar = new JButton("Guardar");
 		btnGuardar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				usuario.setNombre(txtNombre.getText());
-				usuario.setApellidos(txtApellidos.getText());
-				usuario.setEmail(textEmail.getText());
-				GestorDatos.getInstance().actualizarUsuario(usuario);
-				lblInfo.setText("Información actualizada correctamente");
+				try {
+					Usuario usuarioPrevio = (Usuario) usuario.clone();
+					if (!txtUsuario.getText().equals("") && !txtNombre.getText().equals("") && !txtApellidos.getText().equals("") && !textEmail.getText().equals("")) {
+						usuario.setNombre(txtNombre.getText());
+						usuario.setApellidos(txtApellidos.getText());
+						usuario.setEmail(textEmail.getText());					
+						boolean flag = GestorDatos.getInstance().actualizarUsuario(usuario, usuarioPrevio.getUser());
+						if (flag) {
+							JOptionPane.showMessageDialog(null, "Los datos de el usuario "+usuarioPrevio.getUser()+" se han actualizdo correctamente");
+						}else {
+							JOptionPane.showMessageDialog(null, "Los datos no son correctos");
+							UsuarioModificarDatosUI.this.usuario = usuarioPrevio;
+							actualizar();
+						}
+						
+					}else {
+						JOptionPane.showMessageDialog(null, "Los datos no pueden estar vacios");
+					}
+				}catch (Exception ex) {
+					JOptionPane.showMessageDialog(null, "Los datos no son correctos");
+				}
 			}});
-		
-		lblInfo = new JLabel("");
-		GridBagConstraints gbc_lblInfo = new GridBagConstraints();
-		gbc_lblInfo.gridwidth = 6;
-		gbc_lblInfo.insets = new Insets(0, 0, 5, 5);
-		gbc_lblInfo.gridx = 3;
-		gbc_lblInfo.gridy = 12;
-		panel_1.add(lblInfo, gbc_lblInfo);
 		GridBagConstraints gbc_btnGuardar = new GridBagConstraints();
 		gbc_btnGuardar.gridwidth = 6;
 		gbc_btnGuardar.insets = new Insets(0, 0, 5, 5);

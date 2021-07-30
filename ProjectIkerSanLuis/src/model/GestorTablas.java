@@ -151,6 +151,61 @@ public class GestorTablas {
 				
 		return vCuerpo;
 	}
+	public Vector<String> obtenerCabecerasUsuarios(){
+		Vector<String> columnas=new Vector<String>();
+		columnas.add("Usuario");		
+		columnas.add("Contraseña");
+		columnas.add("Nombre");
+		columnas.add("Apellidos");
+		columnas.add("Email");
+		columnas.add("Tipo");
+		columnas.add("Equipo");
+		columnas.add("Centro");
+		return columnas;
+	}
+	
+	public Vector<Vector<String>> obtenerCuerpoUsuariosEncriptado(){
+
+		//Cada elemento del vector es un vector con los datos de cada usuario
+		Vector<Vector<String>> vCuerpo=new Vector<Vector<String>>();
+		
+		//Contiene datos de cada usuario
+		Vector<String> fila=new Vector<String>();
+		Vector<Usuario> usuarios = GestorDatos.getInstance().getUsuarios(); 
+		
+		//Recorrer colección de usuarios
+		
+		Iterator<Usuario> itr = usuarios.iterator();
+		
+		while (itr.hasNext()){
+			
+			Usuario act = itr.next();			
+			fila.add(act.getUser());
+			
+			String passw = "";
+			for(int i = 0; i < act.getPassw().length(); i ++) {
+				passw = passw + "*";
+			}
+			fila.add(passw);
+			
+			fila.add(act.getNombre());
+			fila.add(act.getApellidos());
+			fila.add(act.getEmail());
+			fila.add(act.getTipo());
+			
+			if (act.getEquipo() != null) {
+				fila.add(Integer.toString(act.getEquipo().getIdEquipo()));
+			}else {
+				fila.add("");
+			}
+			fila.add(act.getCentro().getNombre());
+
+			vCuerpo.add(fila);
+			fila=new Vector<String>();
+		}
+				
+		return vCuerpo;
+	}
 	
 	// PROVEEDOR
 	public Vector<String> obtenerCabecerasProveedoresPublico(){
