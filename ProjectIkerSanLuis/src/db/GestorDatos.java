@@ -19,6 +19,7 @@ import model.Componente;
 import model.Equipo;
 import model.Incidencia;
 import model.Lote;
+import model.Peticion;
 import model.Proveedor;
 import model.Solicitud;
 import model.Tecnico;
@@ -51,11 +52,9 @@ public class GestorDatos {
     			String tipoAct = rs.getString("tipo");    			
     			
     			int equipoAct = rs.getInt("equipo");
-    			System.out.println("Equipo = "+equipoAct);
     			Equipo equipo = this.getEquipo(equipoAct);
     			
     			String centroAct = rs.getString("centro");
-    			System.out.println("Centro = "+centroAct);
     			Centro centro = this.getCentro(centroAct);
     			
 //    			int solicitudesAct = rs.getInt("solicitudes");    			
@@ -88,11 +87,9 @@ public class GestorDatos {
 				String tipoAct = rs.getString("tipo");
 				
 				int equipoAct = rs.getInt("equipo");
-				System.out.println("Equipo = "+equipoAct);
 				Equipo equipo = this.getEquipo(equipoAct);
 				
 				String centroAct = rs.getString("centro");
-				System.out.println("Centro = "+centroAct);
 				Centro centro = this.getCentro(centroAct);
 				    			
 				Usuario usuario = new Usuario(userAct, passwAct, nombreAct, apellidosAct, emailAct, tipoAct, equipo, centro);
@@ -121,7 +118,6 @@ public class GestorDatos {
     			String tipoAct = rs.getString("tipo");			
     			
     			String centroAct = rs.getString("centro");
-    			System.out.println("Centro = "+centroAct);
     			Centro centro = this.getCentro(centroAct);
     			
 //    			int solicitudesAct = rs.getInt("solicitudes");    			
@@ -159,11 +155,9 @@ public class GestorDatos {
     			String tipoAct = rs.getString("tipo");
     			
     			int equipoAct = rs.getInt("equipo");
-    			System.out.println("Equipo = "+equipoAct);
     			Equipo equipo = this.getEquipo(equipoAct);
     			
     			String centroAct = rs.getString("centro");
-    			System.out.println("Centro = "+centroAct);
     			Centro centro = this.getCentro(centroAct);
     			
     			int solicitudesAct = rs.getInt("solicitudes");    			
@@ -201,15 +195,14 @@ public Administrador getAdministradorCompleto (String user) {
     			String tipoAct = rs.getString("tipo");
     			
     			int equipoAct = rs.getInt("equipo");
-    			System.out.println("Equipo = "+equipoAct);
     			Equipo equipo = this.getEquipo(equipoAct);
     			
     			String centroAct = rs.getString("centro");
-    			System.out.println("Centro = "+centroAct);
     			Centro centro = this.getCentro(centroAct);
     			
     			int solicitudesAct = rs.getInt("solicitudes");    			
     			Boolean permisosAct = rs.getBoolean("permisos");
+    			System.out.println(permisosAct);
     			
     			administrador = new Administrador(userAct, passwAct, nombreAct, apellidosAct, emailAct, tipoAct, permisosAct, equipo, centro, solicitudesAct);    			
     			    			    		
@@ -226,6 +219,59 @@ public Administrador getAdministradorCompleto (String user) {
 		}    	
     	return administrador;
     }
+public Administrador getAdministradorMenosOcupadoConPermisos (Centro centro) {
+	
+	GestorDB gestorDB = GestorDB.getGestorDB();
+	String query = "SELECT * FROM sanluis.usuario WHERE tipo = 'a' AND centro = '"+centro.getNombre()+"' and permisos = '1' order by solicitudes;";
+	ResultSet rs = gestorDB.execSQL(query);
+	Administrador administrador = null;
+	try {
+
+		int i = 0;
+		while (rs.next() && i < 1) {
+			String userAct = rs.getString("user");
+			String passwAct = rs.getString("passw");
+			String nombreAct = rs.getString("nombre");
+			String apellidosAct = rs.getString("apellidos");
+			String emailAct = rs.getString("email");
+			String tipoAct = rs.getString("tipo");
+			
+			int equipoAct = rs.getInt("equipo");
+			Equipo equipo = this.getEquipo(equipoAct);			
+			
+			int solicitudesAct = rs.getInt("solicitudes");    			
+			Boolean permisosAct = rs.getBoolean("permisos");
+			System.out.println(permisosAct);
+			
+			administrador = new Administrador(userAct, passwAct, nombreAct, apellidosAct, emailAct, tipoAct, permisosAct, equipo, centro, solicitudesAct);    			
+			    			    		
+			i ++;
+		}
+		if (i == 1) {
+			return administrador;
+		}else {
+			return null;
+		}
+		
+	} catch (SQLException e) {
+		e.printStackTrace();
+	}    	
+	return administrador;
+}
+	public boolean insertarUsuario (Usuario usuario) {
+		String query = "";
+		if (usuario.getEquipo() != null) {
+			query = "INSERT INTO `sanluis`.`usuario` (`user`, `passw`, `nombre`, `apellidos`, `email`, `tipo`, `equipo`, `centro`) VALUES ('"+usuario.getUser()+"', '"+usuario.getPassw()+"', '"+usuario.getNombre()+"', '"+usuario.getApellidos()+"', '"+usuario.getEmail()+"', '"+usuario.getTipo()+"', '"+usuario.getEquipo().getIdEquipo()+"', '"+usuario.getCentro()+"');";
+		}else {
+			query = "INSERT INTO `sanluis`.`usuario` (`user`, `passw`, `nombre`, `apellidos`, `email`, `tipo`, `equipo`, `centro`) VALUES ('"+usuario.getUser()+"', '"+usuario.getPassw()+"', '"+usuario.getNombre()+"', '"+usuario.getApellidos()+"', '"+usuario.getEmail()+"', '"+usuario.getTipo()+"', NULL, '"+usuario.getCentro()+"');";
+		}
+		try {
+			GestorDB.getGestorDB().exeqSQLExc(query);
+			return true;
+		}catch (Exception e) {
+			return false;
+		}
+	}
 
 	public boolean actualizarUsuario (Usuario pUsuario, String userPrevio) {
 		String query = "";
@@ -861,8 +907,8 @@ public Administrador getAdministradorCompleto (String user) {
 			while (rs.next()) {
 				int idStock = rs.getInt("idStock");
 				
-				String proveedorName = rs.getString("proveedor");
-				Proveedor proveedor = this.getProveedor(proveedorName);
+				int proveedorId = rs.getInt("proveedor");
+				Proveedor proveedor = this.getProveedor(proveedorId);
 				
 				lote = new Lote(idStock, proveedor);
 			}
@@ -873,9 +919,31 @@ public Administrador getAdministradorCompleto (String user) {
 		
 		return lote;
 	}
-	public Proveedor getProveedor(String proveedorName) {
+	
+	public Proveedor getProveedor(int proveedorId) {
 		Proveedor proveedor = null;
-		String query = "SELECT * FROM sanluis.proveedor WHERE user = '"+proveedorName+"';";
+		String query = "SELECT * FROM sanluis.proveedor WHERE idProveedor = '"+proveedorId+"';";
+		ResultSet rs = GestorDB.getGestorDB().execSQL(query);
+		try {
+			while (rs.next()) {
+				String idProveedor = rs.getString("idProveedor");
+				String user = rs.getString("user");
+				String passw = rs.getString("passw");
+				String email = rs.getString("email");
+				String centroName = rs.getString("centro");
+				Centro centro = this.getCentro(centroName);
+				
+				proveedor = new Proveedor(idProveedor, user, passw, email, centro);
+			}
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return proveedor;
+	}
+	public Proveedor getProveedorUser(String proveedoruser) {
+		Proveedor proveedor = null;
+		String query = "SELECT * FROM sanluis.proveedor WHERE user = '"+proveedoruser+"';";
 		ResultSet rs = GestorDB.getGestorDB().execSQL(query);
 		try {
 			while (rs.next()) {
@@ -915,6 +983,33 @@ public Administrador getAdministradorCompleto (String user) {
 			e.printStackTrace();
 		}
 		return lista;
+	}
+	public boolean actualizarProveedor (Proveedor proveedor, String codigo) {
+		String query = "UPDATE `sanluis`.`proveedor` SET `idProveedor` = '"+proveedor.getIdProveedor()+"', `user` = '"+proveedor.getUser()+"', `passw` = '"+proveedor.getPassw()+"', `email` = '"+proveedor.getEmail()+"', `centro` = '"+proveedor.getCentro().getNombre()+"' WHERE (`idProveedor` = '"+codigo+"');";
+		try {
+			GestorDB.getGestorDB().exeqSQLExc(query);
+			return true;
+		}catch (Exception e) {
+			return false;
+		}
+	}
+	public boolean eliminarProveedor (Proveedor proveedor) {
+		String query = "DELETE FROM `sanluis`.`proveedor` WHERE (`idProveedor` = '"+proveedor.getIdProveedor()+"');";
+		try {
+			GestorDB.getGestorDB().exeqSQLExc(query);
+			return true;
+		}catch (Exception e) {
+			return false;
+		}
+	}
+	public boolean insertarProveedor (Proveedor proveedor) {
+		String query = "INSERT INTO `sanluis`.`proveedor` (`idProveedor`, `user`, `passw`, `email`, `centro`) VALUES ('"+proveedor.getIdProveedor()+"', '"+proveedor.getUser()+"', '"+proveedor.getPassw()+"', '"+proveedor.getEmail()+"', '"+proveedor.getCentro().getNombre()+"');";
+		try {
+			GestorDB.getGestorDB().exeqSQLExc(query);
+			return true;
+		}catch (Exception e) {
+			return false;
+		}
 	}
 	public Vector<Aula> getAulas (Centro centro){
 		if (centro != null) {
@@ -1205,10 +1300,49 @@ public Administrador getAdministradorCompleto (String user) {
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
-		return lista;
-		
-		
-		
+		return lista;							
+	}
+	public AlmacenProveedores getComponenteAlmacen(int idComponenteAlmacen){
+		String query = "SELECT * FROM sanluis.almacen where idComponenteAlmacen = "+idComponenteAlmacen+";";
+		AlmacenProveedores almacenProveedores = null;
+		ResultSet rs = GestorDB.getGestorDB().execSQL(query);
+		try {
+			while(rs.next()) {
+				int idComponente = rs.getInt("idComponenteAlmacen");
+				String nombre = rs.getString("nombre");
+				
+				int idStock = rs.getInt("stock");
+				Lote stock = this.getStock(idStock);
+				
+				String clase = rs.getString("clase");
+				int cantidad = rs.getInt("cantidad");
+				String informacion = rs.getString("informacion");
+				
+				almacenProveedores = new AlmacenProveedores(idComponente, stock, cantidad, nombre, clase, informacion);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return almacenProveedores;							
+	}
+	public Peticion generarPeticion(String concepto, AlmacenProveedores componente, Tecnico tecnico, Administrador administrador, int cantidad) {
+		String query = "SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'sanluis' AND   TABLE_NAME   = 'peticiones';";
+		Peticion peticion = null;
+		int idPeticion = 0;
+		try {
+			ResultSet rs = GestorDB.getGestorDB().execSQL(query);
+			while(rs.next()) {
+				idPeticion = rs.getInt("AUTO_INCREMENT");
+			}
 			
+			peticion = new Peticion(idPeticion, componente, tecnico, administrador, concepto, cantidad, "n");			
+			query = "INSERT INTO `sanluis`.`peticiones` (`componenteAlmacen`, `tecnico`, `administrador`, `descripcion`, `cantidad`, `estado`) VALUES ('"+peticion.getComonenteAlmacen().getIdComponente()+"', '"+tecnico.getUser()+"', '"+administrador.getUser()+"', '"+concepto+"', '"+cantidad+"', 'n');";
+			GestorDB.getGestorDB().exeqSQLExc(query);
+			return peticion;
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

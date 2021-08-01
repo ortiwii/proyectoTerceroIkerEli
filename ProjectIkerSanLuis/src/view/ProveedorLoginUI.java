@@ -56,7 +56,7 @@ public class ProveedorLoginUI extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				GestorDatos gestor = GestorDatos.getInstance();
-				Proveedor proveedor = gestor.getProveedor(txtUserName.getText());
+				Proveedor proveedor = gestor.getProveedorUser(txtUserName.getText());
 				if (proveedor != null && proveedor.getUser().equals(txtUserName.getText()) && proveedor.getPassw().equals(txtPassword.getText())) {				
 					// El usuario y la contraseña son correctas
 					// TODO pantalla proveedor

@@ -22,6 +22,7 @@ import model.Centro;
 import model.Usuario;
 
 import javax.swing.JComboBox;
+import java.awt.Font;
 
 public class AdministradorModificarUsuarioUI extends JFrame{
 	
@@ -55,64 +56,64 @@ public class AdministradorModificarUsuarioUI extends JFrame{
 	}
 	private void initialize() {
 		
-		setBounds(100, 100, 663, 533);		
+		setBounds(100, 100, 662, 540);		
 		getContentPane().setLayout(null);
 		
 		panel_1 = new JPanel();
-		panel_1.setBounds(0, 0, 645, 486);
+		panel_1.setBounds(0, 0, 645, 493);
 		getContentPane().add(panel_1);
 		panel_1.setLayout(null);
 		
 		lblUsuario = new JLabel("Usuario :");
-		lblUsuario.setBounds(54, 48, 52, 16);
+		lblUsuario.setBounds(52, 105, 52, 16);
 		panel_1.add(lblUsuario);
 		
 		txtUsuario = new JTextField();
-		txtUsuario.setBounds(165, 45, 447, 22);
+		txtUsuario.setBounds(165, 102, 447, 22);
 		txtUsuario.setText("Usuario");
 		panel_1.add(txtUsuario);
 		txtUsuario.setColumns(10);
 		
 		lblNombre = new JLabel("Nombre :");
-		lblNombre.setBounds(53, 105, 54, 16);
+		lblNombre.setBounds(52, 150, 54, 16);
 		panel_1.add(lblNombre);
 		
 		txtNombre = new JTextField();
-		txtNombre.setBounds(165, 102, 447, 22);
+		txtNombre.setBounds(165, 147, 447, 22);
 		txtNombre.setText("Nombre");
 		panel_1.add(txtNombre);
 		txtNombre.setColumns(10);
 		
 		lblApellidos = new JLabel("Apellidos :");
-		lblApellidos.setBounds(50, 162, 60, 16);
+		lblApellidos.setBounds(44, 195, 60, 16);
 		panel_1.add(lblApellidos);
 		
 		txtApellidos = new JTextField();
-		txtApellidos.setBounds(165, 159, 447, 22);
+		txtApellidos.setBounds(165, 192, 447, 22);
 		txtApellidos.setText("Apellidos");
 		panel_1.add(txtApellidos);
 		txtApellidos.setColumns(10);
 		
 		lblEmail = new JLabel("Email :");
-		lblEmail.setBounds(60, 219, 40, 16);
+		lblEmail.setBounds(54, 242, 40, 16);
 		panel_1.add(lblEmail);
 		
 		textEmail = new JTextField();
-		textEmail.setBounds(165, 216, 447, 22);
+		textEmail.setBounds(165, 239, 447, 22);
 		textEmail.setText("Email");
 		panel_1.add(textEmail);
 		textEmail.setColumns(10);
 		
 		lblTipoDeUsuario = new JLabel("Tipo de Usuario :");
-		lblTipoDeUsuario.setBounds(31, 276, 99, 16);
+		lblTipoDeUsuario.setBounds(34, 289, 99, 16);
 		panel_1.add(lblTipoDeUsuario);
 		
 		btnCambiarContraseña = new JButton("Quieres cambiar su contrase\u00F1a ?");
-		btnCambiarContraseña.setBounds(54, 420, 219, 25);
+		btnCambiarContraseña.setBounds(145, 382, 272, 25);
 		panel_1.add(btnCambiarContraseña);
 		
 		btnGuardar = new JButton("Guardar");
-		btnGuardar.setBounds(276, 389, 79, 25);
+		btnGuardar.setBounds(54, 382, 79, 25);
 		panel_1.add(btnGuardar);
 
 		
@@ -122,29 +123,30 @@ public class AdministradorModificarUsuarioUI extends JFrame{
 		panel_1.add(btnGuardar);
 		
 		btnVolver = new JButton("Volver");
-		btnVolver.setBounds(292, 420, 69, 25);
+		btnVolver.setBounds(282, 420, 79, 25);
 		panel_1.add(btnVolver);
 		
-		lblSaludo = new JLabel("Estas modificando los datos de <dynamic>");
-		lblSaludo.setBounds(31, 13, 245, 16);
+		lblSaludo = new JLabel("MODIFICAR DATOS USUARIO");
+		lblSaludo.setFont(new Font("Tahoma", Font.BOLD, 15));
+		lblSaludo.setBounds(37, 30, 575, 16);
 		panel_1.add(lblSaludo);
 		
 		String[] tipos = {"Usuario", "Tecnico", "Administrador"};
 		cboxTipos = new JComboBox(tipos);
-		cboxTipos.setBounds(165, 273, 447, 22);
+		cboxTipos.setBounds(165, 286, 447, 22);
 		panel_1.add(cboxTipos);
 		
 		lblCentro = new JLabel("Centro :");
-		lblCentro.setBounds(54, 330, 56, 16);
+		lblCentro.setBounds(51, 337, 56, 16);
 		panel_1.add(lblCentro);
 		
 		centros = GestorDatos.getInstance().getCentros();
 		cboxCentros = new JComboBox(centros);
-		cboxCentros.setBounds(165, 327, 447, 22);
+		cboxCentros.setBounds(165, 334, 447, 22);
 		panel_1.add(cboxCentros);		
 		
 		btnEliminarUsuario = new JButton("Eliminar Usuario");
-		btnEliminarUsuario.setBounds(440, 389, 160, 25);
+		btnEliminarUsuario.setBounds(429, 382, 160, 25);
 		panel_1.add(btnEliminarUsuario);
 
 		btnVolver.addActionListener(new ActionListener() {
@@ -198,15 +200,21 @@ public class AdministradorModificarUsuarioUI extends JFrame{
 					boolean flag = GestorDatos.getInstance().eliminarUsuario(usuario);
 					if (flag) {
 						JOptionPane.showMessageDialog(null, "Se ha eliminado el usuario "+usuario.getUser()+" correctamente");
+						dispose();
 						AdministradorPanelUsuariosUI administradorPanelUsuariosUI = new AdministradorPanelUsuariosUI(administrador);
 						administradorPanelUsuariosUI.setVisible(true);
-						dispose();
 					}else {
 						JOptionPane.showMessageDialog(null, "No se ha podido eliminar el usuario");
 					}
 				}
 			}});
 		
+		btnCambiarContraseña.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {				
+				dispose();
+				AdministradorCambiarContraseñaUsuarioUI administradorCambiarContraseñaUsuarioUI = new AdministradorCambiarContraseñaUsuarioUI(administrador, usuario);
+				administradorCambiarContraseñaUsuarioUI.setVisible(true);
+			}});
 		this.actualizar();
 	}
 	private void actualizar() {

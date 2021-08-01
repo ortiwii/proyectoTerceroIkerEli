@@ -114,11 +114,19 @@ public class AdministradorPanelUsuariosUI extends JFrame{
 		});
 		
 		btnModificarUsuario.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent e) {				
+				dispose();
 				AdministradorModificarUsuarioUI administradorModificarUsuarioUI = new AdministradorModificarUsuarioUI(administrador, GestorDatos.getInstance().getUsuarioCompleto(valor));
 				administradorModificarUsuarioUI.setVisible(true);
-				dispose();
 			}
 		});
+		
+		btnCrearNuevoUsuario.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				dispose();
+				AdministradorCrearUsuarioUI administradorCrearUsuarioUI = new AdministradorCrearUsuarioUI(administrador);
+				administradorCrearUsuarioUI.setVisible(true);
+				
+			}});
 	}
 }

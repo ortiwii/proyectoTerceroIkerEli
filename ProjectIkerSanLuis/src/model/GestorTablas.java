@@ -256,33 +256,38 @@ public class GestorTablas {
 		return columnas;
 	}
 	public Vector<Vector<String>> obtenerCuerpoAlmacen (Centro centro){
-		//Cada elemento del vector es un vector con los datos de cada componente del almacen
-		Vector<Vector<String>> vCuerpo=new Vector<Vector<String>>();
-		
-		//Contiene datos de cada aula componente del almacen
-		Vector<String> fila=new Vector<String>();
-		Vector<AlmacenProveedores> almacen = GestorDatos.getInstance().getAlmacen(centro); 
-		
-		//Recorrer colección de solicitudes componente del almacen
-		
-		Iterator<AlmacenProveedores> itr = almacen.iterator();
-		
-		while (itr.hasNext()){
+		if (centro != null) {
+			//Cada elemento del vector es un vector con los datos de cada componente del almacen
+			Vector<Vector<String>> vCuerpo=new Vector<Vector<String>>();
 			
-			AlmacenProveedores act = itr.next();
-			fila.add(Integer.toString(act.getIdComponente()));
-			fila.add(act.getNombre());
-			fila.add(Integer.toString(act.getLote().getIdStock()));
-			fila.add(act.getClase());
-			fila.add(Integer.toString(act.getCantidad()));
-			fila.add(act.getInformacion());						
+			//Contiene datos de cada aula componente del almacen
+			Vector<String> fila=new Vector<String>();
+			Vector<AlmacenProveedores> almacen = GestorDatos.getInstance().getAlmacen(centro); 
 			
-			vCuerpo.add(fila);
+			//Recorrer colección de solicitudes componente del almacen
 			
-			fila=new Vector<String>();
-		}
+			Iterator<AlmacenProveedores> itr = almacen.iterator();
+			
+			while (itr.hasNext()){
 				
-		return vCuerpo;
+				AlmacenProveedores act = itr.next();
+				fila.add(Integer.toString(act.getIdComponente()));
+				fila.add(act.getNombre());
+				fila.add(Integer.toString(act.getLote().getIdStock()));
+				fila.add(act.getClase());
+				fila.add(Integer.toString(act.getCantidad()));
+				fila.add(act.getInformacion());						
+				
+				vCuerpo.add(fila);
+				
+				fila=new Vector<String>();
+			}
+			return vCuerpo;
+		}else {
+			return new Vector<>();
+		}
+					
+
 	}
 	
 	// AULA

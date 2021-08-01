@@ -122,8 +122,8 @@ public class AdministradorUI extends JFrame {
 		
 		btnGestionProveedores.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {				
-				TecnicoGestionProveedoresUI tecnicoGestionProveedoresUI = new TecnicoGestionProveedoresUI(administrador);
-				tecnicoGestionProveedoresUI.setVisible(true);
+				AdministradorGestionProveedoresUI administradorGestionProveedoresUI = new AdministradorGestionProveedoresUI(administrador);
+				administradorGestionProveedoresUI.setVisible(true);
 			}
 		});
 		

@@ -49,6 +49,10 @@ public class Proveedor {
 		return "Proveedor [idProveedor=" + idProveedor + ", user=" + user + ", passw=" + passw + ", email=" + email
 				+ ", centro=" + centro + "]";
 	}
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		return new Proveedor(idProveedor, user, passw, email, centro);
+	}
 	
 	
 }
