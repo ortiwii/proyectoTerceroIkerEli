@@ -413,9 +413,9 @@ public Administrador getAdministradorMenosOcupadoConPermisos (Centro centro) {
 		
 		return lista;
 	}
-	private Tecnico getTecnico (String user){
+	public Tecnico getTecnico (String user){
 		Tecnico tecnico = null;
-		String query = "SELECT * FROM sanluis.usuario WHERE tipo = 't' and user = '"+user+"';";
+		String query = "SELECT * FROM sanluis.usuario WHERE (tipo = 't' or tipo = 'a') and user = '"+user+"';";
 		ResultSet rs = GestorDB.getGestorDB().execSQL(query);
 		try {			
 			while (rs.next()) {
@@ -1325,6 +1325,33 @@ public Administrador getAdministradorMenosOcupadoConPermisos (Centro centro) {
 		}
 		return almacenProveedores;							
 	}
+	public Peticion getPeticion(int idPeticion) {
+		Peticion peticion = null;
+		String query = "SELECT * FROM sanluis.peticiones where idPeticion = '"+idPeticion+"';";
+		try {
+			ResultSet rs = GestorDB.getGestorDB().execSQL(query);
+			while(rs.next()) {
+				
+				int idComponenteAlmacen = rs.getInt("componenteAlmacen");
+				AlmacenProveedores componenteAlmacen = this.getComponenteAlmacen(idComponenteAlmacen);
+				
+				String tecnicoUser = rs.getString("tecnico");
+				Tecnico tecnico = this.getTecnico(tecnicoUser);
+				
+				String adminUser = rs.getString("administrador");
+				Administrador admin = this.getAdministradorCompleto(adminUser);
+				
+				String descripcion = rs.getString("descripcion");
+				int cantidad = rs.getInt("cantidad");
+				String estado = rs.getString("estado");
+				
+				peticion = new Peticion(idPeticion, componenteAlmacen, tecnico, admin, descripcion, cantidad, estado);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return peticion;
+	}
 	public Peticion generarPeticion(String concepto, AlmacenProveedores componente, Tecnico tecnico, Administrador administrador, int cantidad) {
 		String query = "SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'sanluis' AND   TABLE_NAME   = 'peticiones';";
 		Peticion peticion = null;
@@ -1343,6 +1370,44 @@ public Administrador getAdministradorMenosOcupadoConPermisos (Centro centro) {
 		}catch (Exception e) {
 			e.printStackTrace();
 			return null;
+		}
+	}
+	public Vector<Peticion> getPeticionesAdminNoAtendidas (Administrador administrador){
+		Vector<Peticion> lista = new Vector<>();
+		String query = "SELECT * FROM sanluis.peticiones WHERE administrador = '"+administrador.getUser()+"' and estado = 'n';";
+		try {
+			ResultSet rs = GestorDB.getGestorDB().execSQL(query);
+			while(rs.next()) {
+				int idPeticion = rs.getInt("idPeticion");
+				
+				int idComponenteAlmacen = rs.getInt("componenteAlmacen");
+				AlmacenProveedores componenteAlmacen = this.getComponenteAlmacen(idComponenteAlmacen);
+				
+				String tecnicoUser = rs.getString("tecnico");
+				Tecnico tecnico = this.getTecnico(tecnicoUser);
+				
+//				String adminUser = rs.getString("administrador");
+//				Administrador adminstrador = this.getAdministradorCompleto(adminUser);
+				
+				String descripcion = rs.getString("descripcion");
+				int cantidad = rs.getInt("cantidad");
+				String estado = rs.getString("estado");
+				
+				Peticion peticion = new Peticion(idPeticion, componenteAlmacen, tecnico, administrador, descripcion, cantidad, estado);
+				lista.add(peticion);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return lista;
+	}
+	public boolean actualizarPeticion (Peticion peticion, int idPeticion) {
+		try {
+			String query = "UPDATE `sanluis`.`peticiones` SET `idPeticion` = '"+peticion.getIdPeticion()+"', `componenteAlmacen` = '"+peticion.getComonenteAlmacen().getIdComponente()+"', `tecnico` = '"+peticion.getTecnico().getUser()+"', `administrador` = '"+peticion.getAdministrador().getUser()+"', `descripcion` = '"+peticion.getDescripcion()+"', `cantidad` = '"+peticion.getCantidad()+"', `estado` = '"+peticion.getEstado()+"' WHERE (`idPeticion` = '"+idPeticion+"');";
+			GestorDB.getGestorDB().exeqSQLExc(query);
+			return true;
+		}catch (Exception e) {
+			return false;
 		}
 	}
 }

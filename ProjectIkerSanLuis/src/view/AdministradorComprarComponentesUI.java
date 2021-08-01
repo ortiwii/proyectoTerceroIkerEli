@@ -25,6 +25,7 @@ import model.AlmacenProveedores;
 import model.Centro;
 import model.GestorTablas;
 import model.Peticion;
+import model.Proveedor;
 
 import javax.swing.JComboBox;
 import javax.swing.JTextField;
@@ -51,6 +52,7 @@ public class AdministradorComprarComponentesUI extends JFrame{
 	private JLabel lblConcepto;
 	private JLabel lblCantidad;
 	private JTextField txtCantidad;
+	private JButton btnVerListadoDe;
 	
 	public AdministradorComprarComponentesUI (Administrador administrador) {
 		this.administrador = administrador;		
@@ -124,7 +126,7 @@ public class AdministradorComprarComponentesUI extends JFrame{
 			btnSolicitarCompra.setText("Solicitar compra");
 		}
 		btnSolicitarCompra.setEnabled(false);
-		btnSolicitarCompra.setBounds(509, 469, 241, 25);
+		btnSolicitarCompra.setBounds(509, 479, 241, 25);
 		contentPane.add(btnSolicitarCompra);
 		
 		btnVolver = new JButton("Volver");
@@ -152,9 +154,18 @@ public class AdministradorComprarComponentesUI extends JFrame{
 		
 		txtCantidad = new JTextField();
 		txtCantidad.setEnabled(false);
-		txtCantidad.setBounds(509, 416, 241, 22);
+		txtCantidad.setBounds(509, 406, 241, 22);
 		contentPane.add(txtCantidad);
 		txtCantidad.setColumns(10);
+		
+		btnVerListadoDe = new JButton("Ver listado de peticiones");
+		btnVerListadoDe.setBounds(509, 451, 241, 25);
+		contentPane.add(btnVerListadoDe);
+		
+		if (!administrador.isPermisos()) {
+			btnVerListadoDe.setEnabled(false);
+			btnVerListadoDe.setVisible(false);
+		}
 
 		cboxCentro.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -178,15 +189,24 @@ public class AdministradorComprarComponentesUI extends JFrame{
 		btnSolicitarCompra.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				AlmacenProveedores componenteAlmacen = GestorDatos.getInstance().getComponenteAlmacen(Integer.parseInt(valorComponente));
-									
 				
 					try {
 						if (!txtConcepto.getText().equals("")) {
 							if (Integer.parseInt(txtCantidad.getText()) <= componenteAlmacen.getCantidad()) {
 								
 								if (administrador.isPermisos()) { // Tiene permisos de compra
+									Peticion peticion = GestorDatos.getInstance().generarPeticion(txtConcepto.getText(), componenteAlmacen, administrador, administrador, Integer.parseInt(txtCantidad.getText()));
+									peticion.setEstado("c");
+									GestorDatos.getInstance().actualizarPeticion(peticion, peticion.getIdPeticion());
 									
 									// TODO Notificar proveedor via email
+									
+									JOptionPane.showMessageDialog(null, "Se ha generado la solicitud de compra al proveedor "+componenteAlmacen.getLote().getProveedor().getUser());
+									txtConcepto.setText("");
+									txtConcepto.setEditable(false);
+									txtCantidad.setText("");
+									txtCantidad.setEnabled(false);
+									btnSolicitarCompra.setEnabled(false);
 									
 								}else { // No tiene permisos de compra
 									Administrador administradorAsignado = GestorDatos.getInstance().getAdministradorMenosOcupadoConPermisos((Centro) cboxCentro.getSelectedItem());
@@ -210,11 +230,15 @@ public class AdministradorComprarComponentesUI extends JFrame{
 					}catch (Exception ex) {
 						JOptionPane.showMessageDialog(null, "La cantidad no es numerica");
 					}
-					
-				
 
-
-			}});		
+			}});	
 		
+			btnVerListadoDe.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					dispose();
+					AdministradorAtenderPeticionesUI administradorAtenderPeticionesUI = new AdministradorAtenderPeticionesUI(administrador);
+					administradorAtenderPeticionesUI.setVisible(true);
+				}});
+			
 	}
 }

@@ -698,5 +698,50 @@ public class GestorTablas {
 				
 		return vCuerpo;
 	}
+	
+	// PETICION
+	public Vector <String> obtenerCabecerasPeticiones(){
+		Vector<String> columnas=new Vector<String>();
+		columnas.add("idPeticion");
+		columnas.add("Componente");
+		columnas.add("Tecnico");
+		columnas.add("Administrador");
+		columnas.add("Concepto");
+		columnas.add("Cantidad");
+		columnas.add("Estado");
+		return columnas;
+	}
+	public Vector<Vector<String>> obtenerCuerpoPeticionesAdminNoAtendidas(Administrador administrador){
+		
+		//Cada elemento del vector es un vector con los datos de cada peticion
+		Vector<Vector<String>> vCuerpo=new Vector<Vector<String>>();
+		
+		//Contiene datos de cada peticion
+		Vector<String> fila=new Vector<String>();
+		Vector<Peticion> peticiones = GestorDatos.getInstance().getPeticionesAdminNoAtendidas(administrador);				
+		
+		//Recorrer colección de Incidencias
+		
+		Iterator<Peticion> itr = peticiones.iterator();
+		
+		while (itr.hasNext()){
+			
+			Peticion act = itr.next();
+			fila.add(Integer.toString(act.getIdPeticion()));
+			fila.add(Integer.toString(act.getComonenteAlmacen().getIdComponente()));
+			fila.add(act.getTecnico().getUser());
+			fila.add(act.getAdministrador().getUser());
+			fila.add(act.getDescripcion());
+			fila.add(Integer.toString(act.getCantidad()));
+			fila.add(act.getEstado());
+			
+			vCuerpo.add(fila);
+			
+			fila=new Vector<String>();
+		}
+				
+		return vCuerpo;
+	}
+	
 }
 
