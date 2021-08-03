@@ -76,7 +76,7 @@ public class AdministradorComprarComponentesUI extends JFrame{
 			//Datos de la tabla componentes 
 
 			
-			vContenidoComponentes = gestorTablas.obtenerCuerpoAlmacen(null);			
+			vContenidoComponentes = new Vector<>();			
 			vColumnasComponentes = gestorTablas.obtenerCabecerasAlmacen();
 			contentPane.setLayout(null);
 					
@@ -195,7 +195,7 @@ public class AdministradorComprarComponentesUI extends JFrame{
 							if (Integer.parseInt(txtCantidad.getText()) <= componenteAlmacen.getCantidad()) {
 								
 								if (administrador.isPermisos()) { // Tiene permisos de compra
-									Peticion peticion = GestorDatos.getInstance().generarPeticion(txtConcepto.getText(), componenteAlmacen, administrador, administrador, Integer.parseInt(txtCantidad.getText()));
+									Peticion peticion = GestorDatos.getInstance().generarPeticion(txtConcepto.getText(), componenteAlmacen, administrador, administrador, Integer.parseInt(txtCantidad.getText()), (Centro) cboxCentro.getSelectedItem());
 									peticion.setEstado("c");
 									GestorDatos.getInstance().actualizarPeticion(peticion, peticion.getIdPeticion());
 									
@@ -210,7 +210,7 @@ public class AdministradorComprarComponentesUI extends JFrame{
 									
 								}else { // No tiene permisos de compra
 									Administrador administradorAsignado = GestorDatos.getInstance().getAdministradorMenosOcupadoConPermisos((Centro) cboxCentro.getSelectedItem());
-									Peticion peticion = GestorDatos.getInstance().generarPeticion(txtConcepto.getText(), componenteAlmacen, administrador, administradorAsignado, Integer.parseInt(txtCantidad.getText()));
+									Peticion peticion = GestorDatos.getInstance().generarPeticion(txtConcepto.getText(), componenteAlmacen, administrador, administradorAsignado, Integer.parseInt(txtCantidad.getText()), (Centro) cboxCentro.getSelectedItem());
 									// TODO Notificar via email
 									
 									JOptionPane.showMessageDialog(null, "Se ha generado la peticion "+peticion.getIdPeticion()+", y se ha asignado al administrador con permisos "+administradorAsignado.getUser());

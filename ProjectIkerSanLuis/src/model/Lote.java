@@ -21,5 +21,9 @@ public class Lote {
 	public void setProveedor(Proveedor proveedor) {
 		this.proveedor = proveedor;
 	}
+	@Override
+	public String toString() {
+		return Integer.toString(idStock);
+	}
 	
 }

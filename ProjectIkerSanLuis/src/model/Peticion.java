@@ -8,9 +8,10 @@ public class Peticion {
 	private String descripcion;
 	private int cantidad;
 	private String estado;
+	private Centro centro;
 	
 	public Peticion(int idPeticion, AlmacenProveedores comonenteAlmacen, Tecnico tecnico, Administrador administrador,
-			String descripcion, int cantidad, String estado) {
+			String descripcion, int cantidad, String estado, Centro centro) {
 		super();
 		this.idPeticion = idPeticion;
 		this.comonenteAlmacen = comonenteAlmacen;
@@ -19,6 +20,7 @@ public class Peticion {
 		this.descripcion = descripcion;
 		this.cantidad = cantidad;
 		this.estado = estado;
+		this.centro = centro;
 	}
 	public int getIdPeticion() {
 		return idPeticion;
@@ -49,6 +51,12 @@ public class Peticion {
 	}
 	public void setEstado(String estado) {
 		this.estado = estado;
+	}
+	public Centro getCentro() {
+		return this.centro;
+	}
+	public void setCentro(Centro centro) {
+		this.centro = centro;
 	}
 	public Administrador getAdministrador() {
 		return administrador;

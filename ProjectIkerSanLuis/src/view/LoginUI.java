@@ -115,7 +115,7 @@ public class LoginUI extends JFrame {
 		//					
 		//			}
 		//		});
-				btnAcceder.setBounds(139, 261, 89, 23);
+				btnAcceder.setBounds(129, 234, 89, 23);
 		getContentPane().add(btnAcceder);
 		
 		btnProveedor = new JButton("Acceder como proveedor");
@@ -127,7 +127,7 @@ public class LoginUI extends JFrame {
 				dispose();
 			}});
 		
-		btnProveedor.setBounds(79, 223, 201, 25);
+		btnProveedor.setBounds(81, 267, 201, 25);
 		getContentPane().add(btnProveedor);
 		
 		lblSaludo = new JLabel("INICIO DE SESION");

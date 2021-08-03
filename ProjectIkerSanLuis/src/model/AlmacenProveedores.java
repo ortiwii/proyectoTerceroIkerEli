@@ -2,6 +2,7 @@ package model;
 
 public class AlmacenProveedores {
 
+
 	private int idComponente;
 	private Lote lote;
 	private int cantidad;
@@ -54,7 +55,11 @@ public class AlmacenProveedores {
 	public void setInformacion(String informacion) {
 		this.informacion = informacion;
 	}
-	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+		// TODO Auto-generated method stub
+		return new AlmacenProveedores(idComponente, lote, cantidad, nombre, clase, informacion);
+	}
 	
 	
 }

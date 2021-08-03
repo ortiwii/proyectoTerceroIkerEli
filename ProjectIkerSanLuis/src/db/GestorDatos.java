@@ -24,6 +24,7 @@ import model.Proveedor;
 import model.Solicitud;
 import model.Tecnico;
 import model.Usuario;
+import model.Venta;
 
 public class GestorDatos {
 	private static final GestorDatos instance = new GestorDatos();
@@ -919,7 +920,27 @@ public Administrador getAdministradorMenosOcupadoConPermisos (Centro centro) {
 		
 		return lote;
 	}
-	
+	public Vector<Lote> getLotesProveedor (Proveedor proveedor) {
+		Vector<Lote> lista = new Vector<>();
+		String query = "SELECT * FROM sanluis.stock WHERE proveedor = "+proveedor.getIdProveedor()+";";
+		ResultSet rs = GestorDB.getGestorDB().execSQL(query);
+		try {
+			while (rs.next()) {
+				int idStock = rs.getInt("idStock");
+				
+//				int proveedorId = rs.getInt("proveedor");
+//				Proveedor proveedor = this.getProveedor(proveedorId);
+				
+				Lote lote = new Lote(idStock, proveedor);
+				lista.add(lote);
+			}
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return lista;
+	}
 	public Proveedor getProveedor(int proveedorId) {
 		Proveedor proveedor = null;
 		String query = "SELECT * FROM sanluis.proveedor WHERE idProveedor = '"+proveedorId+"';";
@@ -1302,6 +1323,40 @@ public Administrador getAdministradorMenosOcupadoConPermisos (Centro centro) {
 		}
 		return lista;							
 	}
+	public Vector<AlmacenProveedores> getAlmacen(Proveedor proveedor, String field, String content){
+		Vector<AlmacenProveedores>lista = new Vector<>();
+		String query = "";
+		if (proveedor != null) {
+			if (!field.equals("lote")) {
+				query = "SELECT a.* FROM sanluis.almacen a, sanluis.stock s where s.proveedor = '"+proveedor.getIdProveedor()+"' and s.idStock = a.stock and a."+field+" like '%"+content+"%';";
+			}else {
+				field = "stock";
+				query = "SELECT a.* FROM sanluis.almacen a, sanluis.stock s where s.proveedor = '"+proveedor.getIdProveedor()+"' and s.idStock = a.stock and a."+field+" like '%"+content+"%';";
+			}
+		}else {
+			query = "SELECT * FROM sanluis.almacen;";
+		}	
+		ResultSet rs = GestorDB.getGestorDB().execSQL(query);
+		try {
+			while(rs.next()) {
+				int idComponente = rs.getInt("idComponenteAlmacen");
+				String nombre = rs.getString("nombre");
+				
+				int idStock = rs.getInt("stock");
+				Lote stock = this.getStock(idStock);
+				
+				String clase = rs.getString("clase");
+				int cantidad = rs.getInt("cantidad");
+				String informacion = rs.getString("informacion");
+				
+				AlmacenProveedores almacenProveedores = new AlmacenProveedores(idComponente, stock, cantidad, nombre, clase, informacion);
+				lista.add(almacenProveedores);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return lista;							
+	}
 	public AlmacenProveedores getComponenteAlmacen(int idComponenteAlmacen){
 		String query = "SELECT * FROM sanluis.almacen where idComponenteAlmacen = "+idComponenteAlmacen+";";
 		AlmacenProveedores almacenProveedores = null;
@@ -1325,6 +1380,33 @@ public Administrador getAdministradorMenosOcupadoConPermisos (Centro centro) {
 		}
 		return almacenProveedores;							
 	}
+	public boolean actualizarAlmacen(AlmacenProveedores almacenProveedores, int idPrevio) {
+		try {
+			String query = "UPDATE `sanluis`.`almacen` SET `stock` = '"+almacenProveedores.getLote().getIdStock()+"', `cantidad` = '"+almacenProveedores.getCantidad()+"', `nombre` = '"+almacenProveedores.getNombre()+"', `clase` = '"+almacenProveedores.getClase()+"', `informacion` = '"+almacenProveedores.getInformacion()+"' WHERE (`idComponenteAlmacen` = '"+idPrevio+"');";
+			GestorDB.getGestorDB().exeqSQLExc(query);							
+			return true;
+		}catch (Exception e) {
+			return false;
+		}
+	}
+	public boolean eliminarAlmacen(AlmacenProveedores almacenProveedores) {
+		try {
+			String query = "DELETE FROM `sanluis`.`almacen` WHERE (`idComponenteAlmacen` = '"+almacenProveedores.getIdComponente()+"');";
+			GestorDB.getGestorDB().exeqSQLExc(query);							
+			return true;
+		}catch (Exception e) {
+			return false;
+		}
+	}
+	public boolean insertarComponenteAlmacen (AlmacenProveedores almacenProveedores) {
+		String query = "INSERT INTO `sanluis`.`almacen` (`idComponenteAlmacen`, `stock`, `cantidad`, `nombre`, `clase`, `informacion`) VALUES ('"+almacenProveedores.getIdComponente()+"', '"+almacenProveedores.getLote().getIdStock()+"', '"+almacenProveedores.getCantidad()+"', '"+almacenProveedores.getNombre()+"', '"+almacenProveedores.getClase()+"', '"+almacenProveedores.getInformacion()+"');";		
+		try {
+			GestorDB.getGestorDB().exeqSQLExc(query);
+			return true;
+		}catch (Exception e) {
+			return false;
+		}
+	}
 	public Peticion getPeticion(int idPeticion) {
 		Peticion peticion = null;
 		String query = "SELECT * FROM sanluis.peticiones where idPeticion = '"+idPeticion+"';";
@@ -1345,14 +1427,17 @@ public Administrador getAdministradorMenosOcupadoConPermisos (Centro centro) {
 				int cantidad = rs.getInt("cantidad");
 				String estado = rs.getString("estado");
 				
-				peticion = new Peticion(idPeticion, componenteAlmacen, tecnico, admin, descripcion, cantidad, estado);
+				String centroName = rs.getString("centro");
+				Centro centro = this.getCentro(centroName);
+				
+				peticion = new Peticion(idPeticion, componenteAlmacen, tecnico, admin, descripcion, cantidad, estado, centro);
 			}
 		}catch (Exception e) {
 			e.printStackTrace();
 		}
 		return peticion;
 	}
-	public Peticion generarPeticion(String concepto, AlmacenProveedores componente, Tecnico tecnico, Administrador administrador, int cantidad) {
+	public Peticion generarPeticion(String concepto, AlmacenProveedores componente, Tecnico tecnico, Administrador administrador, int cantidad, Centro centro) {
 		String query = "SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'sanluis' AND   TABLE_NAME   = 'peticiones';";
 		Peticion peticion = null;
 		int idPeticion = 0;
@@ -1362,7 +1447,7 @@ public Administrador getAdministradorMenosOcupadoConPermisos (Centro centro) {
 				idPeticion = rs.getInt("AUTO_INCREMENT");
 			}
 			
-			peticion = new Peticion(idPeticion, componente, tecnico, administrador, concepto, cantidad, "n");			
+			peticion = new Peticion(idPeticion, componente, tecnico, administrador, concepto, cantidad, "n", centro);			
 			query = "INSERT INTO `sanluis`.`peticiones` (`componenteAlmacen`, `tecnico`, `administrador`, `descripcion`, `cantidad`, `estado`) VALUES ('"+peticion.getComonenteAlmacen().getIdComponente()+"', '"+tecnico.getUser()+"', '"+administrador.getUser()+"', '"+concepto+"', '"+cantidad+"', 'n');";
 			GestorDB.getGestorDB().exeqSQLExc(query);
 			return peticion;
@@ -1393,7 +1478,42 @@ public Administrador getAdministradorMenosOcupadoConPermisos (Centro centro) {
 				int cantidad = rs.getInt("cantidad");
 				String estado = rs.getString("estado");
 				
-				Peticion peticion = new Peticion(idPeticion, componenteAlmacen, tecnico, administrador, descripcion, cantidad, estado);
+				String centroName = rs.getString("centro");
+				Centro centro = this.getCentro(centroName);
+				
+				Peticion peticion = new Peticion(idPeticion, componenteAlmacen, tecnico, administrador, descripcion, cantidad, estado, centro);
+				lista.add(peticion);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return lista;
+	}
+	public Vector<Peticion> getPeticionesProveedor (Proveedor proveedor){
+		Vector<Peticion> lista = new Vector<>();
+		String query = "SELECT p.* FROM sanluis.peticiones p, sanluis.stock s, sanluis.almacen a where p.componenteAlmacen = a.idComponenteAlmacen and a.stock = s.idStock and s.proveedor = "+proveedor.getIdProveedor()+" and estado = 'c' ;";
+		try {
+			ResultSet rs = GestorDB.getGestorDB().execSQL(query);
+			while(rs.next()) {
+				int idPeticion = rs.getInt("idPeticion");
+				
+				int idComponenteAlmacen = rs.getInt("componenteAlmacen");
+				AlmacenProveedores componenteAlmacen = this.getComponenteAlmacen(idComponenteAlmacen);
+				
+				String tecnicoUser = rs.getString("tecnico");
+				Tecnico tecnico = this.getTecnico(tecnicoUser);
+				
+				String adminUser = rs.getString("administrador");
+				Administrador admin = this.getAdministradorCompleto(adminUser);
+				
+				String descripcion = rs.getString("descripcion");
+				int cantidad = rs.getInt("cantidad");
+				String estado = rs.getString("estado");
+				
+				String centroName = rs.getString("centro");
+				Centro centro = this.getCentro(centroName);
+				
+				Peticion peticion = new Peticion(idPeticion, componenteAlmacen, tecnico, admin, descripcion, cantidad, estado, centro);
 				lista.add(peticion);
 			}
 		}catch (Exception e) {
@@ -1404,6 +1524,117 @@ public Administrador getAdministradorMenosOcupadoConPermisos (Centro centro) {
 	public boolean actualizarPeticion (Peticion peticion, int idPeticion) {
 		try {
 			String query = "UPDATE `sanluis`.`peticiones` SET `idPeticion` = '"+peticion.getIdPeticion()+"', `componenteAlmacen` = '"+peticion.getComonenteAlmacen().getIdComponente()+"', `tecnico` = '"+peticion.getTecnico().getUser()+"', `administrador` = '"+peticion.getAdministrador().getUser()+"', `descripcion` = '"+peticion.getDescripcion()+"', `cantidad` = '"+peticion.getCantidad()+"', `estado` = '"+peticion.getEstado()+"' WHERE (`idPeticion` = '"+idPeticion+"');";
+			GestorDB.getGestorDB().exeqSQLExc(query);
+			return true;
+		}catch (Exception e) {
+			return false;
+		}
+	}
+	public Venta generarVenta(Proveedor proveedor, Calendar fechaVenta, Peticion peticion, String informacion) {
+		String query = "SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'sanluis' AND   TABLE_NAME   = 'ventas';";
+		Venta venta = null;
+		int idVenta = 0;
+		try {
+			ResultSet rs = GestorDB.getGestorDB().execSQL(query);
+			while(rs.next()) {
+				idVenta = rs.getInt("AUTO_INCREMENT");
+			}
+			
+			venta = new Venta(idVenta, proveedor, fechaVenta, null, "aceptada", peticion, informacion);
+			query = "INSERT INTO `sanluis`.`ventas` (`proveedor`, `fechaVenta`, `estado`, `peticion`, `informacion`) VALUES ('"+venta.getProveedor().getIdProveedor()+"', '"+fechaVenta.getTime().toString()+"', 'Aceptada', '"+venta.getPeticion().getIdPeticion()+"', '"+informacion+"');";
+			GestorDB.getGestorDB().exeqSQLExc(query);
+			return venta;
+			
+		}catch (Exception e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	public Vector<Venta> getVentasProveedor (Proveedor proveedor){
+		Vector<Venta> lista = new Vector<>();
+		String query = "SELECT * FROM sanluis.ventas WHERE proveedor = '"+proveedor.getIdProveedor()+"';";
+		try {
+			ResultSet rs = GestorDB.getGestorDB().execSQL(query);
+			SimpleDateFormat f = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+			while(rs.next()) {
+				int idVenta = rs.getInt("idVenta");								
+				
+				String fechaVenta = rs.getString("fechaVenta");
+				Calendar fechaInicio = null;
+				if (fechaVenta != null) {
+					fechaInicio = Calendar.getInstance();
+					fechaInicio.setTime(f.parse(fechaVenta));						
+				}
+				
+				String fechaCierre = rs.getString("fechaCierre");
+				Calendar fechaFin = null;
+				if (fechaCierre != null) {
+					fechaFin = Calendar.getInstance();
+					fechaFin.setTime(f.parse(fechaCierre));						
+				}
+				String estado = rs.getString("estado");
+				
+				int peticionId = rs.getInt("peticion");
+				Peticion peticion = this.getPeticion(peticionId);
+				
+				String informacion = rs.getString("informacion");
+//				
+				Venta venta = new Venta(idVenta, proveedor, fechaInicio, fechaFin, estado, peticion, informacion);
+				lista.add(venta);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return lista;
+	}
+	
+	public Venta getVenta (int idVenta){
+		Venta venta = null;
+		String query = "SELECT * FROM sanluis.ventas where idVenta = '"+idVenta+"';";
+		try {
+			ResultSet rs = GestorDB.getGestorDB().execSQL(query);
+			SimpleDateFormat f = new SimpleDateFormat("EEE MMM dd HH:mm:ss z yyyy", Locale.ENGLISH);
+			while(rs.next()) {				
+				
+				String fechaVenta = rs.getString("fechaVenta");
+				Calendar fechaInicio = null;
+				if (fechaVenta != null) {
+					fechaInicio = Calendar.getInstance();
+					fechaInicio.setTime(f.parse(fechaVenta));						
+				}
+				
+				String provId = rs.getString("proveedor");
+				Proveedor proveedor = this.getProveedor(Integer.parseInt(provId));
+				
+				String fechaCierre = rs.getString("fechaCierre");
+				Calendar fechaFin = null;
+				if (fechaCierre != null) {
+					fechaFin = Calendar.getInstance();
+					fechaFin.setTime(f.parse(fechaCierre));						
+				}
+				String estado = rs.getString("estado");
+				
+				int peticionId = rs.getInt("peticion");
+				Peticion peticion = this.getPeticion(peticionId);
+				
+				String informacion = rs.getString("informacion");
+
+				venta = new Venta(idVenta, proveedor, fechaInicio, fechaFin, estado, peticion, informacion);
+			}
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		return venta;
+	}
+	public boolean actualizarVenta (Venta venta, int idVenta) {
+		try {
+			String query = "";
+			if (venta.getEstado().equals("Cerrada")) {
+				query = "UPDATE `sanluis`.`ventas` SET `idVenta` = '"+venta.getIdVenta()+"', `proveedor` = '"+venta.getProveedor().getIdProveedor()+"', `fechaVenta` = '"+venta.getFechaVenta().getTime().toString()+"', `fechaCierre` = '"+venta.getFechaCierre().getTime().toString()+"', `estado` = '"+venta.getEstado()+"', `peticion` = '"+venta.getPeticion().getIdPeticion()+"', `informacion` = '"+venta.getInformacion()+"' WHERE (`idVenta` = '"+idVenta+"');";	
+			}else {
+				query = "UPDATE `sanluis`.`ventas` SET `idVenta` = '"+venta.getIdVenta()+"', `proveedor` = '"+venta.getProveedor().getIdProveedor()+"', `fechaVenta` = '"+venta.getFechaVenta().getTime().toString()+"', `fechaCierre` = NULL, `estado` = '"+venta.getEstado()+"', `peticion` = '"+venta.getPeticion().getIdPeticion()+"', `informacion` = '"+venta.getInformacion()+"' WHERE (`idVenta` = '"+idVenta+"');";
+			}
+			
 			GestorDB.getGestorDB().exeqSQLExc(query);
 			return true;
 		}catch (Exception e) {

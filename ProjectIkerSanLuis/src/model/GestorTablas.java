@@ -289,7 +289,75 @@ public class GestorTablas {
 					
 
 	}
-	
+//	public Vector<Vector<String>> obtenerCuerpoAlmacen (Proveedor proveedor){
+//		if (proveedor != null) {
+//			//Cada elemento del vector es un vector con los datos de cada componente del almacen
+//			Vector<Vector<String>> vCuerpo=new Vector<Vector<String>>();
+//			
+//			//Contiene datos de cada aula componente del almacen
+//			Vector<String> fila=new Vector<String>();
+//			Vector<AlmacenProveedores> almacen = GestorDatos.getInstance().getAlmacen(proveedor); 
+//			
+//			//Recorrer colección de solicitudes componente del almacen
+//			
+//			Iterator<AlmacenProveedores> itr = almacen.iterator();
+//			
+//			while (itr.hasNext()){
+//				
+//				AlmacenProveedores act = itr.next();
+//				fila.add(Integer.toString(act.getIdComponente()));
+//				fila.add(act.getNombre());
+//				fila.add(Integer.toString(act.getLote().getIdStock()));
+//				fila.add(act.getClase());
+//				fila.add(Integer.toString(act.getCantidad()));
+//				fila.add(act.getInformacion());						
+//				
+//				vCuerpo.add(fila);
+//				
+//				fila=new Vector<String>();
+//			}
+//			return vCuerpo;
+//		}else {
+//			return new Vector<>();
+//		}
+//					
+//
+//	}
+	public Vector<Vector<String>> obtenerCuerpoAlmacen (Proveedor proveedor, String field, String content){
+		if (proveedor != null) {
+			//Cada elemento del vector es un vector con los datos de cada componente del almacen
+			Vector<Vector<String>> vCuerpo=new Vector<Vector<String>>();
+			
+			//Contiene datos de cada aula componente del almacen
+			Vector<String> fila=new Vector<String>();
+			Vector<AlmacenProveedores> almacen = GestorDatos.getInstance().getAlmacen(proveedor, field, content); 
+			
+			//Recorrer colección de solicitudes componente del almacen
+			
+			Iterator<AlmacenProveedores> itr = almacen.iterator();
+			
+			while (itr.hasNext()){
+				
+				AlmacenProveedores act = itr.next();
+				fila.add(Integer.toString(act.getIdComponente()));
+				fila.add(act.getNombre());
+				fila.add(Integer.toString(act.getLote().getIdStock()));
+				fila.add(act.getClase());
+				fila.add(Integer.toString(act.getCantidad()));
+				fila.add(act.getInformacion());						
+				
+				vCuerpo.add(fila);
+				
+				fila=new Vector<String>();
+			}
+			return vCuerpo;
+		}else {
+			return new Vector<>();
+		}
+					
+
+	}
+
 	// AULA
 	public Vector <String> obtenerCabecerasAulas(){		
 		Vector<String> columnas=new Vector<String>();
@@ -709,8 +777,41 @@ public class GestorTablas {
 		columnas.add("Concepto");
 		columnas.add("Cantidad");
 		columnas.add("Estado");
+		columnas.add("Centro");
 		return columnas;
 	}
+	public Vector<Vector<String>> obtenerCuerpoPeticionesProveedor (Proveedor proveedor){
+		//Cada elemento del vector es un vector con los datos de cada peticion
+		Vector<Vector<String>> vCuerpo=new Vector<Vector<String>>();
+		
+		//Contiene datos de cada peticion
+		Vector<String> fila=new Vector<String>();
+		Vector<Peticion> peticiones = GestorDatos.getInstance().getPeticionesProveedor(proveedor);				
+		
+		//Recorrer colección de Incidencias
+		
+		Iterator<Peticion> itr = peticiones.iterator();
+		
+		while (itr.hasNext()){
+			
+			Peticion act = itr.next();
+			fila.add(Integer.toString(act.getIdPeticion()));
+			fila.add(Integer.toString(act.getComonenteAlmacen().getIdComponente()));
+			fila.add(act.getTecnico().getUser());
+			fila.add(act.getAdministrador().getUser());
+			fila.add(act.getDescripcion());
+			fila.add(Integer.toString(act.getCantidad()));
+			fila.add(act.getEstado());
+			fila.add(act.getCentro().getNombre());
+			
+			vCuerpo.add(fila);
+			
+			fila=new Vector<String>();
+		}
+		
+		return vCuerpo;
+	}
+	
 	public Vector<Vector<String>> obtenerCuerpoPeticionesAdminNoAtendidas(Administrador administrador){
 		
 		//Cada elemento del vector es un vector con los datos de cada peticion
@@ -734,6 +835,7 @@ public class GestorTablas {
 			fila.add(act.getDescripcion());
 			fila.add(Integer.toString(act.getCantidad()));
 			fila.add(act.getEstado());
+			fila.add(act.getCentro().getNombre());
 			
 			vCuerpo.add(fila);
 			
@@ -742,6 +844,60 @@ public class GestorTablas {
 				
 		return vCuerpo;
 	}
+	
+	// VENTAS
+	public Vector <String> obtenerCabecerasVentas(){
+		Vector<String> columnas=new Vector<String>();
+		columnas.add("idVenta");
+		columnas.add("Proveedor");
+		columnas.add("fechaVenta");
+		columnas.add("fechaCierre");
+		columnas.add("Estado");
+		columnas.add("Peticion");
+		columnas.add("Informacion");
+		return columnas;
+	}
+	public Vector<Vector<String>> obtenerCuerpoVentas (Proveedor proveedor){
+		//Cada elemento del vector es un vector con los datos de cada venta
+		Vector<Vector<String>> vCuerpo=new Vector<Vector<String>>();
+		
+		//Contiene datos de cada venta
+		Vector<String> fila=new Vector<String>();
+		Vector<Venta> ventas = GestorDatos.getInstance().getVentasProveedor(proveedor);				
+		
+		//Recorrer colección de ventas
+		
+		Iterator<Venta> itr = ventas.iterator();
+		
+		while (itr.hasNext()){
+			
+			Venta act = itr.next();
+			fila.add(Integer.toString(act.getIdVenta()));
+			fila.add(act.getProveedor().getIdProveedor());
+			
+			if (act.getFechaVenta() != null) {
+				fila.add(act.getFechaVenta().getTime().toString());
+			}else {
+				fila.add("");
+			}
+			
+			if (act.getFechaCierre() != null) {
+				fila.add(act.getFechaCierre().getTime().toString());
+			}else {
+				fila.add("");
+			}
+			
+			fila.add(act.getEstado());
+			fila.add(Integer.toString(act.getPeticion().getIdPeticion()));
+			fila.add(act.getInformacion());
+			vCuerpo.add(fila);
+			
+			fila=new Vector<String>();
+		}
+		
+		return vCuerpo;
+	}
+	
 	
 }
 

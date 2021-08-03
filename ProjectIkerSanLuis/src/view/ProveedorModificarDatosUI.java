@@ -1,33 +1,33 @@
 package view;
 
-import javax.swing.JFrame;
-
-import model.Administrador;
-import model.Centro;
-import model.Proveedor;
-import javax.swing.JLabel;
-import javax.swing.JOptionPane;
-
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Iterator;
 import java.util.Vector;
 
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+
+import model.Administrador;
+import model.Centro;
+import model.Proveedor;
+import model.Utils;
+
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import db.GestorDatos;
 
-import javax.swing.JPasswordField;
-import javax.swing.JComboBox;
-import javax.swing.JButton;
-
-public class AdministradorModificarProveedorUI extends JFrame{
+public class ProveedorModificarDatosUI extends JFrame{
 	
 	private Proveedor proveedor;
+	private JLabel label;
 	private Administrador administrador;
 	private JLabel lblSaludo;
-	private JLabel lblAdministrador;
 	private JLabel lblUsuario;
 	private JLabel lblEmail;
 	private JLabel lblContrasea;
@@ -38,30 +38,24 @@ public class AdministradorModificarProveedorUI extends JFrame{
 	private JComboBox comboBox;
 	private JButton btnVer;
 	private JButton btnGuardar;
-	private JButton btnEliminarProveedor;
 	private JButton btnVolver;
 	private char visible;
 	private char dot;
 	private Vector<Centro> centros;
 	
-	public AdministradorModificarProveedorUI (Administrador administrador, Proveedor proveedor) {
-		this.administrador = administrador;
+	public ProveedorModificarDatosUI (Proveedor proveedor) {
 		this.proveedor = proveedor;
 		initialize();
 	}
 	private void initialize() {
-		
+
 		setBounds(100, 100, 638, 419);
 		getContentPane().setLayout(null);
 		
-		lblSaludo = new JLabel("MODIFICAR DATOS DEL PROVEEDOR");
+		lblSaludo = new JLabel("MODIFICAR  MIS DATOS");
 		lblSaludo.setFont(new Font("Tahoma", Font.BOLD, 15));
-		lblSaludo.setBounds(25, 25, 563, 16);
+		lblSaludo.setBounds(25, 38, 563, 16);
 		getContentPane().add(lblSaludo);
-		
-		lblAdministrador = new JLabel("Administrador : "+administrador.getUser());
-		lblAdministrador.setBounds(25, 54, 563, 16);
-		getContentPane().add(lblAdministrador);
 		
 		lblUsuario = new JLabel("Usuario :");
 		lblUsuario.setBounds(25, 105, 117, 16);
@@ -80,6 +74,7 @@ public class AdministradorModificarProveedorUI extends JFrame{
 		getContentPane().add(lblCentro);
 		
 		txtUsuario = new JTextField();
+		txtUsuario.setEditable(false);
 		txtUsuario.setBounds(139, 102, 449, 22);
 		getContentPane().add(txtUsuario);
 		txtUsuario.setColumns(10);
@@ -95,6 +90,7 @@ public class AdministradorModificarProveedorUI extends JFrame{
 		
 		centros = GestorDatos.getInstance().getCentros();
 		comboBox = new JComboBox(centros);
+		comboBox.setEditable(true);
 		comboBox.setBounds(139, 267, 449, 22);
 		getContentPane().add(comboBox);
 		
@@ -105,10 +101,6 @@ public class AdministradorModificarProveedorUI extends JFrame{
 		btnGuardar = new JButton("Guardar");
 		btnGuardar.setBounds(25, 322, 143, 25);
 		getContentPane().add(btnGuardar);
-		
-		btnEliminarProveedor = new JButton("Eliminar Proveedor");
-		btnEliminarProveedor.setBounds(222, 322, 211, 25);
-		getContentPane().add(btnEliminarProveedor);
 		
 		btnVolver = new JButton("Volver");
 		btnVolver.setBounds(491, 322, 97, 25);
@@ -130,61 +122,35 @@ public class AdministradorModificarProveedorUI extends JFrame{
 		
 		btnVolver.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				dispose();
-				AdministradorGestionProveedoresUI administradorGestionProveedoresUI = new AdministradorGestionProveedoresUI(administrador);
-				administradorGestionProveedoresUI.setVisible(true);
-			}});
-		
-		btnEliminarProveedor.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// 0 = si,1 = no 
-				int eleccion = JOptionPane.showConfirmDialog(null, "Seguro que quieres borrar el proveedor "+proveedor.getUser()+" ?", "Confirmar eliminacion proveedor", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
-				if (eleccion == 0) {
-					boolean flag = GestorDatos.getInstance().eliminarProveedor(proveedor);
-					if (flag) {
-						JOptionPane.showMessageDialog(null, "El proveedor "+proveedor.getUser()+" se ha eliminado correctamente");
-						dispose();
-						AdministradorGestionProveedoresUI administradorGestionProveedoresUI = new AdministradorGestionProveedoresUI(administrador);
-						administradorGestionProveedoresUI.setVisible(true);
-						
-					}else {
-						JOptionPane.showMessageDialog(null, "No se ha podido eliminar el proveedor "+proveedor.getUser());
-					}
-				}
+				dispose();				
 			}});
 		
 		btnGuardar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				try {
-					Proveedor provPrevio = (Proveedor) proveedor.clone();
+				if (Utils.ValidarMail(txtEmail.getText())) {
 					if (psw.getText().length() >= 4) {
-						if (!txtUsuario.getText().equals("") && !txtEmail.getText().equals("") && comboBox.getSelectedIndex() != -1) {
+						// 0 = si,1 = no 
+						int eleccion = JOptionPane.showConfirmDialog(null, "Seguro que quieres cambiar los datos ?", "Confirmar cambio", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+						if (eleccion == 0) {
 							
-							proveedor.setUser(txtUsuario.getText());
 							proveedor.setEmail(txtEmail.getText());
 							proveedor.setPassw(psw.getText());
-							proveedor.setCentro((Centro) comboBox.getSelectedItem());
-							boolean flag = GestorDatos.getInstance().actualizarProveedor(proveedor, provPrevio.getIdProveedor());
+							boolean flag = GestorDatos.getInstance().actualizarProveedor(proveedor, proveedor.getIdProveedor());
 							if (flag) {
-								JOptionPane.showMessageDialog(null, "Los datos del proveedor "+proveedor.getUser()+" se han actualizado correctamente");
+								JOptionPane.showMessageDialog(null, "Se han modificado los datos");
 							}else {
-								JOptionPane.showMessageDialog(null, "Los datos no son correctos");
-								proveedor = provPrevio;
-								actualizar();
-							}
-						}else {
-							JOptionPane.showMessageDialog(null, "Los datos no son correctos");
-							proveedor = provPrevio;
-							actualizar();
+								JOptionPane.showMessageDialog(null, "No se han modificado los datos");
+							}							
 						}
 					}else {
-						JOptionPane.showMessageDialog(null, "La contraseña debe tener al menos 4 caracteres");
+						JOptionPane.showMessageDialog(null, "La contraseña tiene que tener al menos 4 caracteres");
 						actualizar();
 					}
-				}catch (Exception ex) {
-					JOptionPane.showMessageDialog(null, "Los datos no son correctos");
+				}else {
+					JOptionPane.showMessageDialog(null, "El email no es correcto");
 					actualizar();
 				}
+				
 			}});
 		
 		this.actualizar();
@@ -194,14 +160,7 @@ public class AdministradorModificarProveedorUI extends JFrame{
 		txtEmail.setText(proveedor.getEmail());
 		psw.setText(proveedor.getPassw());
 		Iterator<Centro>itr = centros.iterator();
-		boolean flag = false;
-		while(itr.hasNext() && !flag) {
-			Centro act = itr.next();
-			if (act.getNombre().equals(proveedor.getCentro().getNombre())) {
-				flag = true;
-				comboBox.setSelectedItem(act);
-			}
-		}
+		comboBox.setSelectedItem(proveedor.getCentro());
 	}
 
 }
