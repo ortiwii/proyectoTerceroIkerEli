@@ -17,8 +17,11 @@ import javax.swing.table.DefaultTableModel;
 import db.GestorDatos;
 import model.AlmacenProveedores;
 import model.GestorTablas;
+import model.Lote;
 import model.Proveedor;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+
 import java.awt.Font;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
@@ -46,6 +49,7 @@ public class ProveedorGestionAlmacenUI extends JFrame {
 	private JComboBox cbox;
 	private JTextField txtFiltro;
 	private JButton btnBuscar;
+	private JButton btnCrearLote;
 	public ProveedorGestionAlmacenUI (Proveedor proveedor) {
 		this.proveedor = proveedor;
 		
@@ -115,7 +119,7 @@ public class ProveedorGestionAlmacenUI extends JFrame {
 		
 		btnModificarComponente = new JButton("Modificar componente");
 		btnModificarComponente.setEnabled(false);
-		btnModificarComponente.setBounds(248, 361, 167, 25);
+		btnModificarComponente.setBounds(236, 361, 167, 25);
 		contentPane.add(btnModificarComponente);
 		
 		lblFiltrarPor = new JLabel("Filtrar por :");
@@ -134,6 +138,10 @@ public class ProveedorGestionAlmacenUI extends JFrame {
 		btnBuscar = new JButton("Buscar");
 		btnBuscar.setBounds(654, 60, 97, 25);
 		contentPane.add(btnBuscar);
+		
+		btnCrearLote = new JButton("Crear nuevo lote");
+		btnCrearLote.setBounds(415, 361, 151, 25);
+		contentPane.add(btnCrearLote);
 		
 		btnVolver.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
@@ -157,12 +165,25 @@ public class ProveedorGestionAlmacenUI extends JFrame {
 			}});
 		btnBuscar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				vContenidoComponentes = gestorTablas.obtenerCuerpoAlmacen(proveedor, (String)cbox.getSelectedItem(), txtFiltro.getText());
-				modeloComponentes.setDataVector(vContenidoComponentes, vColumnasComponentes);
-				modeloComponentes.fireTableDataChanged();
+				actualizar();
 			}});
+		btnCrearLote.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// 0 = si,1 = no 
+				int eleccion = JOptionPane.showConfirmDialog(null, "Seguro que quieres crear un nuevo lote ?", "Confirmar creacion de lote", JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE);
+				if (eleccion == 0) {
+					Lote lote = GestorDatos.getInstance().generarLote(proveedor);
+					JOptionPane.showMessageDialog(null, "Se ha creado el Lote numero "+lote.getIdStock());
+					actualizar();
+				}
+								
 				
-
+			}});
+						
 	}
-
+	private void actualizar() {
+		vContenidoComponentes = gestorTablas.obtenerCuerpoAlmacen(proveedor, (String)cbox.getSelectedItem(), txtFiltro.getText());
+		modeloComponentes.setDataVector(vContenidoComponentes, vColumnasComponentes);
+		modeloComponentes.fireTableDataChanged();
+	}
 }

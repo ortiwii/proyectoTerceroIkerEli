@@ -8,6 +8,7 @@ import javax.swing.JFrame;
 
 import model.Administrador;
 import javax.swing.JLabel;
+import java.awt.Font;
 
 public class AdministradorUI extends JFrame {
 	
@@ -21,6 +22,7 @@ public class AdministradorUI extends JFrame {
 	private JButton btnPanelSolicitudes;
 	private JButton btnGestionComponentes;
 	private JButton btnPanelDeUsuarios;
+	private JLabel lblPanelDeAdministrador;
 	
 	public AdministradorUI (Administrador administrador) {
 		this.administrador = administrador;
@@ -28,44 +30,45 @@ public class AdministradorUI extends JFrame {
 	}
 	private void initialize() {
 		
-		setBounds(100, 100, 571, 465);
+		setBounds(100, 100, 626, 343);
+		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		JButton btnGestionarEquipos = new JButton("GESTIONAR EQUIPOS");
-		btnGestionarEquipos.setBounds(30, 215, 324, 25);
+		btnGestionarEquipos.setBounds(30, 241, 192, 25);
 		
 		btnEnseñarDatos = new JButton("MODIFICAR DATOS");
-		btnEnseñarDatos.setBounds(30, 119, 324, 25);
+		btnEnseñarDatos.setBounds(30, 105, 192, 25);
 		getContentPane().setLayout(null);
 		
 		lblBienvenido = new JLabel();
-		lblBienvenido.setBounds(30, 69, 324, 16);
+		lblBienvenido.setBounds(30, 56, 324, 16);
 		getContentPane().add(lblBienvenido);
 		getContentPane().add(btnEnseñarDatos);
 		
 		
 		btnGestionarAulas = new JButton("GESTIONAR AULAS");
-		btnGestionarAulas.setBounds(30, 185, 324, 25);
+		btnGestionarAulas.setBounds(30, 203, 192, 25);
 		getContentPane().add(btnGestionarAulas);
 		getContentPane().add(btnGestionarEquipos);
 		
 		btnPanelSolicitudes = new JButton("PANEL DE SOLICITUDES");
-		btnPanelSolicitudes.setBounds(30, 245, 324, 25);
+		btnPanelSolicitudes.setBounds(315, 105, 209, 25);
 		getContentPane().add(btnPanelSolicitudes);
 		
 		btnGestionComponentes = new JButton("GESTION DE COMPONENTES");
-		btnGestionComponentes.setBounds(30, 305, 324, 25);
+		btnGestionComponentes.setBounds(315, 203, 265, 25);
 		getContentPane().add(btnGestionComponentes);
 		
 		btnGestionProveedores = new JButton("GESTION DE PROVEEDORES y COMPRAS");
-		btnGestionProveedores.setBounds(30, 336, 324, 25);
+		btnGestionProveedores.setBounds(315, 241, 265, 25);
 		getContentPane().add(btnGestionProveedores);
 		
 		btnPanelIncidencias = new JButton("PANEL DE INCIDENCIAS");
-		btnPanelIncidencias.setBounds(30, 273, 324, 25);
+		btnPanelIncidencias.setBounds(315, 143, 209, 25);
 		getContentPane().add(btnPanelIncidencias);
 		
 		btnPanelDeUsuarios = new JButton("PANEL DE USUARIOS");
-		btnPanelDeUsuarios.setBounds(30, 150, 324, 25);
+		btnPanelDeUsuarios.setBounds(30, 143, 192, 25);
 		getContentPane().add(btnPanelDeUsuarios);
 		
 		lblBienvenido.setText("Hola " + administrador.getUser() );
@@ -127,6 +130,11 @@ public class AdministradorUI extends JFrame {
 			}
 		});
 		
+		
+		lblPanelDeAdministrador = new JLabel("PANEL DE ADMINISTRADOR");
+		lblPanelDeAdministrador.setFont(new Font("Tahoma", Font.BOLD, 17));
+		lblPanelDeAdministrador.setBounds(30, 27, 584, 16);
+		getContentPane().add(lblPanelDeAdministrador);
 	}
 	
 	

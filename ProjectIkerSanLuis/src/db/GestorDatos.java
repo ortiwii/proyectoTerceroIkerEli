@@ -384,6 +384,29 @@ public Administrador getAdministradorMenosOcupadoConPermisos (Centro centro) {
 		return solicitudAct;
 		
 	}
+	public Lote generarLote (Proveedor proveedor) {
+		
+		String query = "SELECT `AUTO_INCREMENT` FROM  INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'sanluis' AND   TABLE_NAME   = 'stock';";
+		ResultSet rs = GestorDB.getGestorDB().execSQL(query);
+		Lote lote = null;
+		int idStock;
+		try {
+			while (rs.next()) {
+				idStock = rs.getInt("AUTO_INCREMENT");
+				
+				lote = new Lote(idStock, proveedor);
+				query = "INSERT INTO `sanluis`.`stock` (`proveedor`) VALUES ('"+lote.getProveedor().getIdProveedor()+"');";
+				GestorDB.getGestorDB().execSQL(query);
+									
+			}
+
+		}catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		return lote;
+		
+	}
 	private Vector<Tecnico> listadoDeTecnicos (){
 		Vector<Tecnico>lista = new Vector<>();
 		String query = "SELECT * FROM sanluis.usuario WHERE tipo = 't' order by solicitudes;";
