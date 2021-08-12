@@ -16,8 +16,8 @@ public class GestorDB {
     private String server = "127.0.0.1";
     private String nombreDB = "sanluis";
     /* A rellenar
-    /**/ private String username = "root";
-    /**/ private String password = "Ikerbasauri0718";
+    /**/ private String username = "";
+    /**/ private String password = "";
     
     private GestorDB() {
         this.conOpen();
